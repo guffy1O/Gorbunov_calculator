@@ -47,7 +47,9 @@
             android:layout_weight="1"
             android:layout_margin="4dp"
             android:text="/"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:backgroundTint="#E6E6FA"
+            android:textColor="#000000" />
 
         <Button
             android:id="@+id/btnMultiply"
@@ -56,7 +58,9 @@
             android:layout_weight="1"
             android:layout_margin="4dp"
             android:text="*"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:backgroundTint="#E6E6FA"
+            android:textColor="#000000"/>
     </LinearLayout>
 
     <LinearLayout
@@ -99,7 +103,9 @@
             android:layout_weight="1"
             android:layout_margin="4dp"
             android:text="-"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:backgroundTint="#E6E6FA"
+            android:textColor="#000000" />
     </LinearLayout>
 
     <LinearLayout
@@ -142,7 +148,9 @@
             android:layout_weight="1"
             android:layout_margin="4dp"
             android:text="+"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:backgroundTint="#E6E6FA"
+            android:textColor="#000000" />
     </LinearLayout>
 
     <LinearLayout
