@@ -14,6 +14,7 @@ import androidx.core.view.GravityCompat;
 
 import com.example.gorbunov_calculator.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
+import androidx.appcompat.app.AlertDialog;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         binding.btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resetCalculator();
+                showClearConfirmationDialog();
             }
         });
 
@@ -226,5 +227,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             binding.tvResult.setText("Error");
             resetCalculator();
         }
+
+    }
+    private void showClearConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Сбросить калькулятор?")
+                .setMessage("Вы уверены, что хотите очистить текущий результат и операции?");
+
+        builder.setPositiveButton("СБРОСИТЬ", (dialog, id) -> {
+            resetCalculator();
+        });
+
+        builder.setNegativeButton("ОТМЕНА", (dialog, id) -> {
+            dialog.dismiss();
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
