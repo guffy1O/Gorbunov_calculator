@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Gorbunov_calculator</string>
+    <string name="app_name">Gorbunov Calculator</string>
+    <string name="nav_open">Open menu</string>
+    <string name="nav_close">Close menu</string>
 </resources>

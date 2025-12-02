@@ -1,19 +1,23 @@
 package com.example.gorbunov_calculator;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 
-public class MainActivity extends AppCompatActivity {
-    private TextView tvResult;
+import com.example.gorbunov_calculator.databinding.ActivityMainBinding;
+import com.google.android.material.navigation.NavigationView;
+
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ActivityMainBinding binding;
     private StringBuilder currentInput = new StringBuilder("0");
     private static final String KEY_INPUT = "CurrentInput";
 
@@ -28,9 +32,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
 
-        tvResult = findViewById(R.id.tvResult);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        setSupportActionBar(binding.toolbar);
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this,
+                binding.drawerLayout,
+                binding.toolbar,
+                R.string.nav_open,
+                R.string.nav_close
+        );
+
+        binding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        binding.navView.setNavigationItemSelectedListener(this);
+
 
         if (savedInstanceState != null) {
             currentInput.setLength(0);
@@ -40,19 +60,31 @@ public class MainActivity extends AppCompatActivity {
             operator = savedInstanceState.getString(KEY_OPERATOR, "");
             isNewInput = savedInstanceState.getBoolean(KEY_NEW_INPUT, true);
         }
-        tvResult.setText(currentInput.toString());
+        binding.tvResult.setText(currentInput.toString());
 
         setupNumberButtons();
         setupClearButton();
-
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-
-        });
     }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.nav_about) {
+            startActivity(new Intent(this, AboutActivity.class));
+        }
+
+        binding.drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_INPUT, currentInput.toString());
@@ -79,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         for (int id : numberButtonIds) {
-            findViewById(id).setOnClickListener(numberClickListener);
+            binding.getRoot().findViewById(id).setOnClickListener(numberClickListener);
         }
     }
 
@@ -92,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         if (digit.equals(".")) {
             if (!currentInput.toString().contains(".")) {
                 currentInput.append(digit);
-                tvResult.setText(currentInput.toString());
+                binding.tvResult.setText(currentInput.toString());
             }
             return;
         }
@@ -103,23 +135,23 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentInput.length() < 16) {
             currentInput.append(digit);
-            tvResult.setText(currentInput.toString());
+            binding.tvResult.setText(currentInput.toString());
         }
     }
 
     private void setupClearButton() {
-        findViewById(R.id.btnClear).setOnClickListener(new View.OnClickListener() {
+        binding.btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 resetCalculator();
             }
         });
 
-        findViewById(R.id.btnPlus).setOnClickListener(v -> performOperation("+"));
-        findViewById(R.id.btnMinus).setOnClickListener(v -> performOperation("-"));
-        findViewById(R.id.btnDivide).setOnClickListener(v -> performOperation("/"));
-        findViewById(R.id.btnMultiply).setOnClickListener(v -> performOperation("*"));
-        findViewById(R.id.btnEquals).setOnClickListener(v -> calculateResult());
+        binding.btnPlus.setOnClickListener(v -> performOperation("+"));
+        binding.btnMinus.setOnClickListener(v -> performOperation("-"));
+        binding.btnDivide.setOnClickListener(v -> performOperation("/"));
+        binding.btnMultiply.setOnClickListener(v -> performOperation("*"));
+        binding.btnEquals.setOnClickListener(v -> calculateResult());
     }
     private void resetCalculator() {
         currentInput.setLength(0);
@@ -127,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         operand1 = 0;
         operator = "";
         isNewInput = true;
-        tvResult.setText("0");
+        binding.tvResult.setText("0");
     }
     private double calculate(double op1, double op2, String op) {
         switch (op) {
@@ -155,18 +187,18 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 operand1 = calculate(operand1, currentValue, operator);
                 if (Double.isNaN(operand1)) {
-                    tvResult.setText("Error: Div/0");
+                    binding.tvResult.setText("Error: Div/0");
                     resetCalculator();
                     return;
                 }
-                tvResult.setText(String.valueOf(operand1));
+                binding.tvResult.setText(String.valueOf(operand1));
             }
 
             operator = nextOperator;
             isNewInput = true;
 
         } catch (NumberFormatException e) {
-            tvResult.setText("Error");
+            binding.tvResult.setText("Error");
             resetCalculator();
         }
     }
@@ -182,18 +214,17 @@ public class MainActivity extends AppCompatActivity {
             operand1 = calculate(operand1, op2, operator);
 
             if (Double.isNaN(operand1)) {
-                tvResult.setText("Error: Div/0");
+                binding.tvResult.setText("Error: Div/0");
             } else {
-                tvResult.setText(String.valueOf(operand1));
+                binding.tvResult.setText(String.valueOf(operand1));
             }
 
             operator = "";
             isNewInput = true;
 
         } catch (NumberFormatException e) {
-            tvResult.setText("Error");
+            binding.tvResult.setText("Error");
             resetCalculator();
         }
     }
-
 }
